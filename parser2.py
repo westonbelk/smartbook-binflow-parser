@@ -1,10 +1,16 @@
+#!/usr/bin/python3
+import sys, getopt
 import struct
 
-STRING_START = (b'\xFA\xFF')
 
-QUESTION_ALL = bytearray(b'\xF5\xFF')
-ANSWER_ALL   = bytearray(b'\x00\xF6\xFF\xFA\xFF')
-ANSWER_CORRECT = bytearray(b'\xFC\xFF\x00\x00\x00\x00\x00\x00\xF0\x3F')
+
+STRING_START	= bytearray(b'\xFA\xFF')
+
+QUESTION_ALL	= bytearray(b'\xF5\xFF')
+ANSWER_ALL		= bytearray(b'\x00\xF6\xFF\xFA\xFF')
+ANSWER_CORRECT	= bytearray(b'\xFC\xFF\x00\x00\x00\x00\x00\x00\xF0\x3F')
+
+
 
 def findNextAnswer(b):
 	pos = b.find(ANSWER_ALL)
@@ -12,6 +18,7 @@ def findNextAnswer(b):
 		return -1
 	else:
 		return pos + len(ANSWER_ALL)
+
 
 
 def findNextQuestion(b):
@@ -22,10 +29,13 @@ def findNextQuestion(b):
 		skip_buffer = b[pos+len(QUESTION_ALL):].find(STRING_START) + len(STRING_START)
 		return pos + len(QUESTION_ALL) + skip_buffer
 
+
+
 # The bytestring that this searches for is after the answer itself.
 def findNextCorrectAnswer(b):
 	pos = b.find(ANSWER_CORRECT)
 	return pos
+
 
 
 def printTextBuffer(b, suff=""):
@@ -36,31 +46,40 @@ def printTextBuffer(b, suff=""):
 
 
 
-with open("binflows/chapter8.txt", "rb") as f:
-	b = bytearray(f.read())
+def open_file_as_binary(filename):
+	with open(filename, "rb") as f:
+		b = bytearray(f.read())
+	return b
 	
 
 
-q_pos = findNextQuestion(b)
-b = b[q_pos:]
-
-while q_pos != -1:
-	printTextBuffer(b)
-	q_pos = findNextQuestion(b)
-	a_pos = findNextAnswer(b)
-
-	# Find all answers before the next question
-	while(a_pos != -1 and a_pos < q_pos):
-		b = b[a_pos:]
-		
-		q_pos = findNextQuestion(b)
-		a_pos = findNextAnswer(b)
-		if(findNextCorrectAnswer(b) < q_pos and findNextCorrectAnswer(b) < a_pos):
-			printTextBuffer(b, "<--")
-		else:
-			printTextBuffer(b)
-
-	# Set buffer to next question.
+def main(argv):
+	b = open_file_as_binary(argv[1])
 	q_pos = findNextQuestion(b)
 	b = b[q_pos:]
-	print()
+
+	while q_pos != -1:
+		printTextBuffer(b)
+		q_pos = findNextQuestion(b)
+		a_pos = findNextAnswer(b)
+
+		# Find all answers before the next question
+		while(a_pos != -1 and a_pos < q_pos):
+			b = b[a_pos:]
+			
+			q_pos = findNextQuestion(b)
+			a_pos = findNextAnswer(b)
+			if(findNextCorrectAnswer(b) < q_pos and findNextCorrectAnswer(b) < a_pos):
+				printTextBuffer(b, "<--")
+			else:
+				printTextBuffer(b)
+
+		# Set buffer to next question.
+		q_pos = findNextQuestion(b)
+		b = b[q_pos:]
+		print()
+
+
+
+if __name__ == "__main__":
+	main(sys.argv)
