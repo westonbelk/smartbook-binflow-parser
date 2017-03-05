@@ -1,0 +1,14 @@
+\xF4\xFF (65524) [short]
+\xF6\xFF (65526) [pointer/general type?]
+\xFA\xFF (65530) [string] <following byte is the length and then the string begins>
+\xFC\xFF (65532) [double]
+\xF5\xFF (65525) [Question ID] <following 4 bytes is the id>
+ 		<(65523) [SKIP]
+\xF3\xFF (65523) []
+\xFD\xFF (65533) [false]
+\xFE\xFF (65534) [true]
+\xF8\xFF (65528) [Array] <following byte is the length, 2nd following byte is the start>
+\xF7\xFF (65527) [Nothing]
+\xFB\xFF (65531) []
+\xF9\xFF (65529) [Array] <1-2nd byte is the length, 3rd following byte is the start? Is calculated differently>
+\xFF\xFF (65535) [null]
