@@ -12,6 +12,11 @@ ANSWER_CORRECT	= bytearray(b'\xFC\xFF\x00\x00\x00\x00\x00\x00\xF0\x3F')
 
 
 
+def print_help():
+	print("Usage: smartbook_parser <filename.binflow>")
+
+
+
 def findNextAnswer(b):
 	pos = b.find(ANSWER_ALL)
 	if pos == -1:
@@ -82,4 +87,7 @@ def main(argv):
 
 
 if __name__ == "__main__":
-	main(sys.argv)
+	if(len(sys.argv) < 2):
+		print_help()
+	else:
+		main(sys.argv)
